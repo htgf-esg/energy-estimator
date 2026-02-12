@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Energy Estimator</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: Inter, Arial, sans-serif;
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 20px;
+      background: #ffffff;
+      color: #111;
+    }
+
+    .logo {
+      display: block;
+      margin: 0 auto 30px auto;
+      max-width: 220px;
+    }
+
+    h1 {
+      text-align: center;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .sub {
+      text-align: center;
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      border: 1px solid #e6e6e6;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      background: #fafafa;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    label {
+      font-size: 13px;
+      color: #666;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 4px;
+      margin-bottom: 12px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      font-size: 14px;
+      background: #fff;
+    }
+
+    .section-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #111;
+    }
+
+    .helper {
+      font-size: 12px;
+      color: #666;
+      line-height: 1.5;
+      margin-top: -6px;
+      margin-bottom: 14px;
+    }
+
+    .hint {
+      display: none;
+      font-size: 12px;
+      color: #666;
+      line-height: 1.5;
+      margin-top: -6px;
+      margin-bottom: 14px;
+      padding: 10px 12px;
+      border: 1px solid #e6e6e6;
+      background: #fff;
+      border-radius: 10px;
+    }
+
+    .output-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid #e6e6e6;
+      border-radius: 10px;
+      background: #fff;
+      margin-bottom: 10px;
+    }
+
+    .value-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .value {
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      min-width: 80px;
+      text-align: right;
+    }
+
+    .copy-btn {
+      padding: 6px 12px;
+      font-size: 13px;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+      background: #fff;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .copy-btn:hover {
+      background: #f2f2f2;
+    }
+
+    .footer-note {
+      font-size: 12px;
+      color: #666;
+      margin-top: 15px;
+      line-height: 1.5;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+
+<img src="htgf-logo.png" class="logo" alt="HTGF Logo">
+
+<h1>Energy Estimator</h1>
+
+<p class="sub">
+Please enter the average values for the year 2025 (not the current headcount).
+Use your best estimate if necessary.
+</p>
+
+<div class="card">
+
+  <!-- Method selector -->
+  <label>Office energy calculation method</label>
+  <select id="officeMethod">
+    <option value="fte" selected>
+      Estimate based on FTEs – recommended for small teams till 30 people
+    </option>
+    <option value="area">
+      Estimate based on Office area (m²) – recommended for larger companies with 30+ people
+    </option>
+  </select>
+
+  <div class="hint" id="methodHint">
+    For companies of this size, the area-based method is typically more accurate.
+  </div>
+
+  <div class="grid-2">
+
+    <!-- OFFICE COLUMN -->
+    <div>
+      <div class="section-title">Office</div>
+
+      <div id="officeFTEWrap">
+        <label>Office FTE</label>
+        <input type="number" id="officeFTE" value="0" min="0">
+      </div>
+
+      <div id="officeAreaWrap" class="hidden">
+        <label>Office area (m²)</label>
+        <input type="number" id="officeArea" value="0" min="0">
+      </div>
+
+      <label>Renewable share (office electricity) %</label>
+      <input type="number" id="officeRenew" value="0" min="0" max="100">
+    </div>
+
+    <!-- HOME OFFICE COLUMN -->
+    <div>
+      <div class="section-title">Home Office</div>
+
+      <label>Home Office FTE</label>
+      <input type="number" id="homeFTE" value="0" min="0">
+
+      <label>Renewable share (home electricity) %</label>
+      <input type="number" id="homeRenew" value="0" min="0" max="100">
+    </div>
+
+  </div>
+
+</div>
+
+<div class="card">
+
+  <div class="output-row">
+    <div>Conventional electricity (kWh)</div>
+    <div class="value-group">
+      <div class="value" id="conventional">0</div>
+      <button class="copy-btn" onclick="copyValue('conventional')">Copy</button>
+    </div>
+  </div>
+
+  <div class="output-row">
+    <div>Renewable electricity (kWh)</div>
+    <div class="value-group">
+      <div class="value" id="renewable">0</div>
+      <button class="copy-btn" onclick="copyValue('renewable')">Copy</button>
+    </div>
+  </div>
+
+  <div class="output-row">
+    <div>Heat (mmBtu)</div>
+    <div class="value-group">
+      <div class="value" id="heat">0</div>
+      <button class="copy-btn" onclick="copyValue('heat')">Copy</button>
+    </div>
+  </div>
+
+  <div class="footer-note">
+    NOTE:<br>
+For companies with dedicated office space and larger teams, the area-based method is typically more accurate because building energy demand mainly scales with square meters rather than headcount.<br><br>
+
+This is an estimation based on default assumptions and is meant as a practical proxy only for HTGF reporting.
+  </div>
+
+  </div>
+
+</div>
+
+<script>
+  const OFFICE_ELEC_FTE = 2022;
+  const OFFICE_HEAT_FTE = 3061;
+  const HOME_ELEC_FTE = 333;
+  const HOME_HEAT_FTE = 700;
+
+  const OFFICE_ELEC_M2 = 65;
+  const OFFICE_HEAT_M2 = 102;
+
+  const KWH_TO_MMBTU = 0.003412;
+
+  function clampPercent(v) {
+    return Math.min(100, Math.max(0, v));
+  }
+
+  function formatHeatEvenNoDecimals(mmbtu) {
+    let n = Math.round(mmbtu);
+    if (n % 2 !== 0) n += 1;
+    if (n < 0) n = 0;
+    return n;
+  }
+
+  function syncMethodVisibility() {
+    const method = document.getElementById("officeMethod").value;
+    document.getElementById("officeFTEWrap").classList.toggle("hidden", method !== "fte");
+    document.getElementById("officeAreaWrap").classList.toggle("hidden", method !== "area");
+  }
+
+  function maybeShowHint() {
+    const method = document.getElementById("officeMethod").value;
+    const officeFTE = parseFloat(document.getElementById("officeFTE").value) || 0;
+    const hint = document.getElementById("methodHint");
+
+    if (method === "fte" && officeFTE >= 30) {
+      hint.style.display = "block";
+    } else {
+      hint.style.display = "none";
+    }
+  }
+
+  function calculate() {
+    const method = document.getElementById("officeMethod").value;
+
+    const officeFTE = parseFloat(document.getElementById("officeFTE").value) || 0;
+    const officeArea = parseFloat(document.getElementById("officeArea").value) || 0;
+    const homeFTE = parseFloat(document.getElementById("homeFTE").value) || 0;
+
+    const officeRenew = clampPercent(parseFloat(document.getElementById("officeRenew").value) || 0);
+    const homeRenew = clampPercent(parseFloat(document.getElementById("homeRenew").value) || 0);
+
+    let officeElec = 0;
+    let officeHeat = 0;
+
+    if (method === "fte") {
+      officeElec = officeFTE * OFFICE_ELEC_FTE;
+      officeHeat = officeFTE * OFFICE_HEAT_FTE;
+    } else {
+      officeElec = officeArea * OFFICE_ELEC_M2;
+      officeHeat = officeArea * OFFICE_HEAT_M2;
+    }
+
+    const homeElec = homeFTE * HOME_ELEC_FTE;
+    const homeHeat = homeFTE * HOME_HEAT_FTE;
+
+    const renewableElec =
+      (officeElec * officeRenew / 100) +
+      (homeElec * homeRenew / 100);
+
+    const conventionalElec =
+      (officeElec * (1 - officeRenew / 100)) +
+      (homeElec * (1 - homeRenew / 100));
+
+    const heatKWh = officeHeat + homeHeat;
+    const heatMMBtu = heatKWh * KWH_TO_MMBTU;
+
+    document.getElementById("conventional").innerText = Math.round(conventionalElec);
+    document.getElementById("renewable").innerText = Math.round(renewableElec);
+    document.getElementById("heat").innerText = formatHeatEvenNoDecimals(heatMMBtu);
+
+    maybeShowHint();
+  }
+
+  function copyValue(id) {
+    navigator.clipboard.writeText(document.getElementById(id).innerText);
+  }
+
+  ["officeMethod","officeFTE","officeArea","homeFTE","officeRenew","homeRenew"].forEach(id => {
+    document.getElementById(id).addEventListener("input", () => {
+      syncMethodVisibility();
+      calculate();
+    });
+  });
+
+  syncMethodVisibility();
+  calculate();
+</script>
+
+</body>
+</html>
