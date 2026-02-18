@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Energy Estimator</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: Inter, Arial, sans-serif;
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 20px;
+      background: #ffffff;
+      color: #111;
+    }
+
+    .logo {
+      display: block;
+      margin: 0 auto 30px auto;
+      max-width: 220px;
+    }
+
+    h1 {
+      text-align: center;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .sub {
+      text-align: center;
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 26px;
+      line-height: 1.5;
+    }
+
+    .card {
+      border: 1px solid #e6e6e6;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      background: #fafafa;
+    }
+
+    .step-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .step-badge {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      background: #111;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 13px;
+      flex: 0 0 28px;
+      margin-top: 1px;
+    }
+
+    .step-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin: 0;
+      line-height: 1.25;
+    }
+
+    .step-desc {
+      font-size: 12px;
+      color: #666;
+      margin: 4px 0 0 0;
+      line-height: 1.5;
+    }
+
+    .divider {
+      height: 1px;
+      background: #e6e6e6;
+      margin: 14px 0 18px 0;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    label {
+      font-size: 13px;
+      color: #666;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 4px;
+      margin-bottom: 12px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      font-size: 14px;
+      background: #fff;
+    }
+
+    .section-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #111;
+    }
+
+    .helper {
+      font-size: 12px;
+      color: #666;
+      line-height: 1.5;
+      margin-top: -6px;
+      margin-bottom: 14px;
+    }
+
+    .example {
+      font-size: 12px;
+      color: #111;
+      line-height: 1.5;
+      margin: 10px 0 14px 0;
+      padding: 10px 12px;
+      border: 1px solid #e6e6e6;
+      background: #fff;
+      border-radius: 10px;
+    }
+
+    .hint {
+      display: none;
+      font-size: 12px;
+      color: #111;
+      line-height: 1.5;
+      margin-top: -6px;
+      margin-bottom: 14px;
+      padding: 10px 12px;
+      border: 1px solid #e6e6e6;
+      background: #fff;
+      border-radius: 10px;
+    }
+
+    .output-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid #e6e6e6;
+      border-radius: 10px;
+      background: #fff;
+      margin-bottom: 10px;
+    }
+
+    .value-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .value {
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      min-width: 90px;
+      text-align: right;
+    }
+
+    .copy-btn {
+      padding: 6px 12px;
+      font-size: 13px;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+      background: #fff;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .copy-btn:hover {
+      background: #f2f2f2;
+    }
+
+    .footer-note {
+      font-size: 12px;
+      color: #666;
+      margin-top: 12px;
+      line-height: 1.5;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @media (max-width: 720px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<img src="htgf-logo.png" class="logo" alt="HTGF Logo">
+
+<h1>Energy Estimator</h1>
+
+<p class="sub">
+This calculator helps you estimate your energy consumption if no primary data (e.g. office energy bills) is available.<br>
+Please use average values for the year 2025 (not current headcount).
+</p>
+
+<!-- STEP 1 -->
+<div class="card">
+  <div class="step-header">
+    <div class="step-badge">1</div>
+    <div>
+      <p class="step-title">Step 1 - Choose the calculation method</p>
+      <p class="step-desc">
+        Small teams can use the FTE-based method. Larger companies with dedicated office space should consider the area-based method (m²).
+      </p>
+    </div>
+  </div>
+
+  <label>Choose the office energy calculation method</label>
+  <select id="officeMethod">
+    <option value="fte" selected>
+      Estimate based on FTE – recommended for teams up to 14 FTE
+    </option>
+    <option value="area">
+      Estimate based on Office area (m²) – recommended for larger companies with 15+ FTE
+    </option>
+  </select>
+
+  </div>
+
+  <div class="hint" id="methodHint">
+    For companies of this size, the area-based method is typically more accurate.
+  </div>
+</div>
+
+<!-- STEP 2 -->
+<div class="card">
+  <div class="step-header">
+    <div class="step-badge">2</div>
+    <div>
+      <p class="step-title">Step 2 - Provide your company data</p>
+      <p class="step-desc">
+        Enter average values for 2025. Split Office vs Home Office FTE based on your typical working setup.
+      </p>
+    </div>
+  </div>
+
+  <div class="example">
+    <strong>Example (splitting Office vs Home Office FTE):</strong><br>
+    If your company has <strong>5.0 FTE</strong> in total and you work <strong>50% home office</strong> on average, enter:<br>
+    • <strong>Office FTE = 2.5</strong><br>
+    • <strong>Home Office FTE = 2.5</strong><br>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="grid-2">
+
+    <!-- OFFICE COLUMN -->
+    <div>
+      <div class="section-title">Office</div>
+
+      <div id="officeFTEWrap">
+        <label>Office FTE</label>
+        <input type="number" id="officeFTE" value="0" min="0" step="0.1">
+      </div>
+
+      <div id="officeAreaWrap" class="hidden">
+        <label>Office area (m²)</label>
+        <input type="number" id="officeArea" value="0" min="0">
+      </div>
+
+      <label>Renewable electricity share in the office (in %)</label>
+      <input type="number" id="officeRenew" value="0" min="0" max="100">
+    </div>
+
+    <!-- HOME OFFICE COLUMN -->
+    <div>
+      <div class="section-title">Home Office</div>
+
+      <label>Home Office FTE</label>
+      <input type="number" id="homeFTE" value="0" min="0" step="0.1">
+
+      <label>Renewable electricity share at home (in %)</label>
+      <input type="number" id="homeRenew" value="0" min="0" max="100">
+    </div>
+
+  </div>
+</div>
+
+<!-- STEP 3 -->
+<div class="card">
+  <div class="step-header">
+    <div class="step-badge">3</div>
+    <div>
+      <p class="step-title">Step 3 - Copy the results</p>
+      <p class="step-desc">
+        Use the “Copy” buttons to paste the values into the Carbon Footprint Questionnaire in apiday.
+      </p>
+    </div>
+  </div>
+
+  <div class="output-row">
+    <div>Conventional electricity (kWh)</div>
+    <div class="value-group">
+      <div class="value" id="conventional">0</div>
+      <button class="copy-btn" onclick="copyValue('conventional')">Copy</button>
+    </div>
+  </div>
+
+  <div class="output-row">
+    <div>Renewable electricity (kWh)</div>
+    <div class="value-group">
+      <div class="value" id="renewable">0</div>
+      <button class="copy-btn" onclick="copyValue('renewable')">Copy</button>
+    </div>
+  </div>
+
+  <div class="output-row">
+    <div>Heat (mmBtu)</div>
+    <div class="value-group">
+      <div class="value" id="heat">0</div>
+      <button class="copy-btn" onclick="copyValue('heat')">Copy</button>
+    </div>
+  </div>
+
+  <div class="footer-note">
+    This is an estimation based on default assumptions and is meant as a practical proxy only for HTGF reporting.
+  </div>
+</div>
+
+<script>
+  // --- FTE assumptions (Germany proxies)
+  const OFFICE_ELEC_FTE = 2022;
+  const OFFICE_HEAT_FTE = 3061;
+  const HOME_ELEC_FTE = 333;
+  const HOME_HEAT_FTE = 700;
+
+  // --- Area assumptions (Germany proxies)
+  const OFFICE_ELEC_M2 = 65;
+  const OFFICE_HEAT_M2 = 102;
+
+  const KWH_TO_MMBTU = 0.003412;
+
+  function clampPercent(v) {
+    return Math.min(100, Math.max(0, v));
+  }
+
+  // Heat output rule:
+  // - no decimals
+  // - even numbers only
+  function formatHeatEvenNoDecimals(mmbtu) {
+    let n = Math.round(mmbtu);
+    if (n % 2 !== 0) n += 1;
+    if (n < 0) n = 0;
+    return n;
+  }
+
+  function syncMethodVisibility() {
+    const method = document.getElementById("officeMethod").value;
+    document.getElementById("officeFTEWrap").classList.toggle("hidden", method !== "fte");
+    document.getElementById("officeAreaWrap").classList.toggle("hidden", method !== "area");
+  }
+
+  function maybeShowHint() {
+    const method = document.getElementById("officeMethod").value;
+    const officeFTE = parseFloat(document.getElementById("officeFTE").value) || 0;
+    const hint = document.getElementById("methodHint");
+
+    if (method === "fte" && officeFTE >= 30) {
+      hint.style.display = "block";
+    } else {
+      hint.style.display = "none";
+    }
+  }
+
+  function calculate() {
+    const method = document.getElementById("officeMethod").value;
+
+    const officeFTE = parseFloat(document.getElementById("officeFTE").value) || 0;
+    const officeArea = parseFloat(document.getElementById("officeArea").value) || 0;
+    const homeFTE = parseFloat(document.getElementById("homeFTE").value) || 0;
+
+    const officeRenew = clampPercent(parseFloat(document.getElementById("officeRenew").value) || 0);
+    const homeRenew = clampPercent(parseFloat(document.getElementById("homeRenew").value) || 0);
+
+    let officeElec = 0;
+    let officeHeat = 0;
+
+    if (method === "fte") {
+      officeElec = officeFTE * OFFICE_ELEC_FTE;
+      officeHeat = officeFTE * OFFICE_HEAT_FTE;
+    } else {
+      officeElec = officeArea * OFFICE_ELEC_M2;
+      officeHeat = officeArea * OFFICE_HEAT_M2;
+    }
+
+    const homeElec = homeFTE * HOME_ELEC_FTE;
+    const homeHeat = homeFTE * HOME_HEAT_FTE;
+
+    const renewableElec =
+      (officeElec * officeRenew / 100) +
+      (homeElec * homeRenew / 100);
+
+    const conventionalElec =
+      (officeElec * (1 - officeRenew / 100)) +
+      (homeElec * (1 - homeRenew / 100));
+
+    const heatKWh = officeHeat + homeHeat;
+    const heatMMBtu = heatKWh * KWH_TO_MMBTU;
+
+    document.getElementById("conventional").innerText = Math.round(conventionalElec);
+    document.getElementById("renewable").innerText = Math.round(renewableElec);
+    document.getElementById("heat").innerText = formatHeatEvenNoDecimals(heatMMBtu);
+
+    maybeShowHint();
+  }
+
+  function copyValue(id) {
+    const text = document.getElementById(id).innerText;
+
+    navigator.clipboard.writeText(text).catch(() => {
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+    });
+  }
+
+  ["officeMethod","officeFTE","officeArea","homeFTE","officeRenew","homeRenew"].forEach(id => {
+    document.getElementById(id).addEventListener("input", () => {
+      syncMethodVisibility();
+      calculate();
+    });
+    document.getElementById(id).addEventListener("change", () => {
+      syncMethodVisibility();
+      calculate();
+    });
+  });
+
+  // Init
+  syncMethodVisibility();
+  calculate();
+</script>
+
+</body>
+</html>
